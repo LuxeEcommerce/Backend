@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "hash-wasm": "^4.11.0",
+    "jose": "^5.9.6",
+    "kafkajs": "^2.2.4",
+    "mysql2": "^3.11.4",
+    "redis": "^4.7.0",
+    "sequelize": "^6.37.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.5"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon -L index.js"
+  }
+}

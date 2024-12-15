@@ -1,0 +1,166 @@
+services:
+  
+  # Database Service (MySQL)
+  database:
+    image: mysql:8
+    container_name: database
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: main_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user_password
+    volumes:
+      - database-data:/var/lib/mysql
+    networks:
+      - backend-network
+
+  redis-service:
+    image: redis:alpine
+    container_name: redis-service
+    ports:
+      - "6379:6379"
+    networks:
+      - backend-network
+
+  rabbitmq:
+    image: rabbitmq:4.0.3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - backend-network  
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+  
+
+  # User Authentication Service
+  user-auth:
+    build:
+      context: ./app/user-auth
+    container_name: user-auth
+    ports:
+      - "4040:3050"  # Changed to avoid conflict
+    environment:
+      DATABASE_URL: mysql://user:user_password@database:3306/main_db
+      REDIS_HOST: redis-service
+      KAFKA_BROKER: kafka:9092
+      JWT_SECRET: 740cf68915c0657737e36f71ad9342bf2d974b01fd111c92b8ca97036ac87b2c
+    depends_on:
+      - database
+      - redis-service
+    networks:
+      - backend-network
+    volumes:
+      - ./app/user-auth:/usr/src/app
+
+  # User Function Service (Profile, Cart)
+  user-function:
+    build:
+      context: ./app/user-function
+    container_name: user-function
+    ports:
+      - "4050:3050"  # Changed to avoid conflict
+    environment:
+      DATABASE_URL: mysql://user:user_password@database:3306/main_db
+      REDIS_HOST: redis-service
+      KAFKA_BROKER: kafka:9092
+      JWT_SECRET: 740cf68915c0657737e36f71ad9342bf2d974b01fd111c92b8ca97036ac87b2c
+    depends_on:
+      - database
+      - redis-service
+    networks:
+      - backend-network
+    volumes:
+      - ./app/user-function:/usr/src/app
+
+  # Product Service
+  product-service:
+    build:
+      context: ./app/product-service
+    container_name: product-service
+    ports:
+      - "4020:3050"  # Changed to avoid conflict
+    environment:
+      DATABASE_URL: mysql://user:user_password@database:3306/main_db
+      REDIS_HOST: redis-service
+      KAFKA_BROKER: kafka:9092
+      JWT_SECRET: 740cf68915c0657737e36f71ad9342bf2d974b01fd111c92b8ca97036ac87b2c
+    depends_on:
+      - database
+      - redis-service
+    networks:
+      - backend-network
+    volumes:
+      - ./app/product-service:/usr/src/app
+
+  # Payment Service
+  payment-service:
+    build:
+      context: ./app/payment-service
+    container_name: payment-service
+    ports:
+      - "4010:3050"  # Changed to avoid conflict
+    environment:
+      DATABASE_URL: mysql://user:user_password@database:3306/main_db
+      REDIS_HOST: redis-service
+      KAFKA_BROKER: kafka:9092
+      JWT_SECRET: 740cf68915c0657737e36f71ad9342bf2d974b01fd111c92b8ca97036ac87b2c
+      PAYPAL_CLIENT_ID: AaDS2TS9ApZHDbuhz5XnC7M4-NMsJrVNEnbjV0ks87lKwc_vlkUNHgceoS7qHetyNyzmnvBbeFgRztSj
+      PAYPAL_CLIENT_SECRET: ECJajsy0LH1kv0xUK2h7Oz8rXcwReNCJ09mzdmZkhLZH2L1uqcwu67xtl5h7osi5-aWcbidQPw2Yxyn-
+    depends_on:
+      - database
+      - redis-service
+    networks:
+      - backend-network
+    volumes:
+      - ./app/payment-service:/usr/src/app
+
+  notification-service:
+    build:
+      context: ./app/notification-service
+    container_name: notification-service
+    ports:
+      - "4070:3050"  # Changed to avoid conflict
+    environment:
+      DATABASE_URL: mysql://user:user_password@database:3306/main_db
+      REDIS_HOST: redis-service
+      KAFKA_BROKER: kafka:9092
+      JWT_SECRET: 740cf68915c0657737e36f71ad9342bf2d974b01fd111c92b8ca97036ac87b2c
+    depends_on:
+      - database
+      - redis-service
+    networks:
+      - backend-network
+    volumes:
+      - ./app/notification-service:/usr/src/app
+    command: ["npm", "run", "dev"]
+
+  # Nginx Reverse Proxy
+  nginx:
+    build: 
+      context: ./app/nginx
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "3050:80"  # Expose port 3050 on the host
+    volumes:
+      - ./app/nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - user-auth
+      - user-function
+      - product-service
+      - payment-service
+      - notification-service
+    networks:
+      - backend-network
+
+volumes:
+  database-data:
+  rabbitmq-data:
+
+networks:
+  backend-network:
+    driver: bridge

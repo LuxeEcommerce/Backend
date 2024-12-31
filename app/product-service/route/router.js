@@ -35,6 +35,11 @@ router.get('/product/:id', async (req, res) => {
     res.status(200).json(products);
 });
 
+router.post('/product/search', async (req, res) => {
+    const products = await productController.searchProduct(req.body.productName);
+    res.status(200).json(products);
+});
+
 router.post('/product/create', jwthandler, async (req, res) => {
     const product = await productController.createProduct(req.body, req.jwt.payload);
     if(product === 'Unauthorized') {

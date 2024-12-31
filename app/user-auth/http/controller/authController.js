@@ -120,6 +120,30 @@ class userAuthController{
 
         return message;
     }
+
+    static async verifyAdmin(jwttoken){
+        const session = await SessionToken.findOne({
+            where: {
+                token: jwttoken.payload.token
+            }
+        });
+
+        if(!session){
+            return 'Unauthorized';
+        }
+
+        const user = await User.findOne({
+            where: {
+                uuid: session.userId
+            }
+        });
+
+        if(user.role !== 'admin'){
+            return 'Unauthorized';
+        }
+
+        return 'Authorized';
+    }
 }
 
 module.exports = userAuthController;

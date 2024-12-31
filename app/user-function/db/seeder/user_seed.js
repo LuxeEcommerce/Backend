@@ -1,7 +1,7 @@
 const hashWasm = require('hash-wasm');
 const sequelize = require('../serve');
 const crypto = require('crypto');
-const { User, Cart, SessionToken } = require('../model/user_model');
+const { User, Cart, SessionToken, Product } = require('../model/user_model');
 
 const seedUserFunction = async () => {
     try {
@@ -46,6 +46,8 @@ const seedUserFunction = async () => {
                 address: 'seller address',
             }
         ]);
+
+        // await Product.bulkCreate
         
         await Cart.bulkCreate([
             {

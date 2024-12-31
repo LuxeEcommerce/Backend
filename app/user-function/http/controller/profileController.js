@@ -1,4 +1,4 @@
-const { User, Cart, SessionToken, Orders } = require('../../db/model/user_model');
+const { User, Cart, SessionToken, Orders, Product } = require('../../db/model/user_model');
 const cookieParser = require('cookie-parser');
 
 class profileController {
@@ -126,6 +126,43 @@ class profileController {
 
         return cart;
 
+    }
+
+    static async createProduct(productData, payload) {
+        const session = await SessionToken.findOne({
+            where: {
+                token: payload.token
+            }
+        });
+
+        if(!session) {
+            return 'Unauthorized';
+        }
+
+        const user = await User.findOne({
+            where: {
+                uuid: session.userId
+            }
+        });
+
+        if(!user) {
+            return 'Unauthorized';
+        }
+        console.log(user);
+        if(user.role !== 'admin') {
+            return 'Unauthorized';
+        }
+
+        const product = await Product.create({
+            productName: productData.productName,
+            productDescription: productData.productDescription,
+            productPrice: productData.productPrice,
+            productImage: productData.productImage,
+            productStock: productData.productStock,
+            productCategory: productData.productCategory
+        });
+
+        return product;
     }
 }
 

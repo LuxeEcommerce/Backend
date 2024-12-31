@@ -141,6 +141,24 @@ class productController {
 
         return 'Product deleted';
     }
+
+    static async searchProduct(search) {
+        if(!search) {
+            const products = await Product.findAll();
+            return products;
+        }
+        const products = await Product.findAll({
+            where: {
+                productName: search
+            }
+        });
+
+        if(!products) {
+            return 'Product not found';
+        }
+
+        return products;
+    }
 }
 
 module.exports = productController;

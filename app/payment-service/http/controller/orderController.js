@@ -116,8 +116,8 @@ class orderController {
                     },
                 ],
                 "application_context": {
-                    "return_url": "https://3e91-66-96-225-129.ngrok-free.app/api/pay/payment/successpage",
-                    "cancel_url": "https://3e91-66-96-225-129.ngrok-free.app/api/pay/payment/cancelpage"
+                    "return_url": "https://luxecloth.vercel.app/order",
+                    "cancel_url": "https://luxecloth.vercel.app/order"
                 }
             },
             {

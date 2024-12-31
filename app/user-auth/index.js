@@ -6,12 +6,14 @@ const cookieParser = require('cookie-parser');
 
 const userAuth = require('./route/userauth');
 
-app.use(cors(
-  {
-    origin: 'http://localhost:3000',
-    credentials: true,
-  }
-));
+app.use(
+  cors({
+    origin: 'https://luxecloth.vercel.app',
+    credentials: true, 
+  })
+);
+
+app.options('*', cors());
 
 app.use(express.json());
 app.use(cookieParser('secret'));

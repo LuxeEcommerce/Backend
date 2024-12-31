@@ -10,7 +10,7 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
         acquire: 30000,
     },
     dialectOptions: {
-      connectTimeout: 10000, 
+      connectTimeout: 30000, 
     },
 });
 

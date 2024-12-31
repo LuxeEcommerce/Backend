@@ -88,6 +88,14 @@ router.post('/addtocart', jwthandler, async (req, res) => {
     return res.status(200).json(cart);
 });
 
+router.post('/product/create', jwthandler, async (req, res) => {
+    const product = await profileController.createProduct(req.body, req.jwt.payload);
+    if(product === 'Unauthorized') {
+        return res.status(401).json({message: 'Unauthorized'});
+    }
+    res.status(201).json(product);
+});
+
 
 module.exports = router;
     

@@ -70,9 +70,16 @@ router.post('/logout', jwthandler, async (req, res) => {
         return res.status(501).json({message: 'Failed to log out'});
     }
     res.clearCookie('token');
-    return res.status(200).json({
-        message: 'User logged out'
-    });
+    return res.redirect('https://luxecloth.vercel.app/');
+})
+
+router.post('/verifyadmin', jwthandler, async (req, res) => {
+    const token = req.jwt;
+    const user = await userAuthController.verifyAdmin(token);
+    if(user.message === 'Unauthorized'){
+        return res.status(401).json({message: 'Unauthorized'});
+    }
+    return res.status(200).json({message: 'User is admin'});
 })
 
 module.exports = router;

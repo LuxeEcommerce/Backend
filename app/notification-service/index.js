@@ -3,12 +3,7 @@ const app = express();
 const cors = require('cors');
 const port = 3050;  
 
-app.use(cors(
-    {
-        origin: 'http://localhost:3000',
-        credentials: true,
-    }
-));
+app.use(cors());
 
 app.get('/notif', (req, res) => {
     res.send('Hello World!');

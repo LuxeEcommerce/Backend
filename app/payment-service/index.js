@@ -5,12 +5,14 @@ const port = 3050;
 const paymentfunc = require('./route/router');
 const cookieParser = require('cookie-parser');
 
-app.use(cors(
-  {
-    origin: 'http://localhost:3000',
-    credentials: true,
-  }
-));
+app.use(
+  cors({
+    origin: 'https://luxecloth.vercel.app',
+    credentials: true, 
+  })
+);
+
+app.options('*', cors());
 
 app.use(cookieParser('secret'));
 

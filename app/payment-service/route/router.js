@@ -45,7 +45,6 @@ router.get('/cancelpage', (req, res) => {
 });
 
 router.post('/makeorder', jwthandler, async (req, res) => {
-    console.log(req.jwt.payload);
     const order = await orderController.makeOrder(req.jwt.payload);
     if(order === 'Unauthorized') {
         return res.status(401).json({message: 'Unauthorized'});
